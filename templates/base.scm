@@ -30,6 +30,12 @@
                    (span (@ (class "heart")) "♥")
                    " and lots of parentheses"
                    (span (@ (class "paren close")) ")"))
+                (p (@ (class "footer-haunt"))
+                   "Built with 👻 "
+                   (a (@ (href "https://dthompson.us/projects/haunt.html")
+                         (target "_blank")
+                         (rel "noopener noreferrer"))
+                      "Haunt"))
                 (p (@ (class "footer-links"))
                    "Contribute on "
                    (a (@ (href "https://github.com/ispringle/sexp-ed")
@@ -54,7 +60,10 @@
           (link (@ (rel "stylesheet")
                    (href "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap")))
           (link (@ (rel "stylesheet")
-                   (href "/assets/css/style.css"))))
+                   (href "/assets/css/style.css")))
+          (link (@ (rel "icon")
+                   (type "image/svg+xml")
+                   (href "/assets/favicon.svg"))))
          (body
           ,(navigation)
           (main (@ (class "main"))

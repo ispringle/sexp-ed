@@ -383,7 +383,12 @@
                    "Bel"
                    "http://www.paulgraham.com/bel.html"
                    "Paul Graham's latest Lisp specification - a spec for a new dialect."
-                   '("language" "experimental")))))
+                   '("language" "experimental"))
+                 ,(resource-card
+                   "JavaScript"
+                   "https://brendaneich.com/2008/04/popularity/"
+                   "\"Scheme in the browser\" they said. First-class functions, closures, and lambda... under a Java costume."
+                   '("language" "free" "classic")))))
 
 ;; Main content export
 (define (index-content)
