@@ -94,11 +94,13 @@ jobs:
             const escapeScheme = (str) => str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
             
             // Create the resource-card s-expression
-            const resourceCard = `                 ,(resource-card
-                   "${escapeScheme(title)}"
-                   "${escapeScheme(url)}"
-                   "${escapeScheme(description)}"
-                   ${tagsScheme})`;
+            const resourceCard = [
+              '                 ,(resource-card',
+              `                   "${escapeScheme(title)}"`,
+              `                   "${escapeScheme(url)}"`,
+              `                   "${escapeScheme(description)}"`,
+              `                   ${tagsScheme})`
+            ].join('\n');
             
             // Consistent branch name based on issue number only
             const branchName = `resource/issue-${issue.number}`;
@@ -154,22 +156,24 @@ jobs:
               `$1\n${resourceCard}$2`
             );
             
-            const prBody = `## New Resource Submission
-
-This PR was automatically generated from issue #${issue.number}.
-
-### Resource Details
-- **Title:** ${title}
-- **URL:** ${url}
-- **Description:** ${description}
-- **Section:** ${dialect}
-- **Tags:** ${tags.join(', ') || 'none'}
-
----
-
-Please review the changes and merge if everything looks good.
-
-Closes #${issue.number}`;
+            const prBody = [
+              '## New Resource Submission',
+              '',
+              `This PR was automatically generated from issue #${issue.number}.`,
+              '',
+              '### Resource Details',
+              `- **Title:** ${title}`,
+              `- **URL:** ${url}`,
+              `- **Description:** ${description}`,
+              `- **Section:** ${dialect}`,
+              `- **Tags:** ${tags.join(', ') || 'none'}`,
+              '',
+              '---',
+              '',
+              'Please review the changes and merge if everything looks good.',
+              '',
+              `Closes #${issue.number}`
+            ].join('\n');
             
             if (existingPR) {
               // UPDATE existing PR: reset branch to main and apply new changes
