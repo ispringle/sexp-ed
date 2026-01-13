@@ -35,6 +35,26 @@
                  (span (@ (class "float-paren p5")) "(")
                  (span (@ (class "float-paren p6")) ")"))))
 
+;; REPL section - Interactive Scheme playground
+(define (repl-section)
+  `(section (@ (id "try-it") (class "section repl-section"))
+            (h2 (@ (class "section-title"))
+                (span (@ (class "paren")) "(")
+                "Try It"
+                (span (@ (class "paren")) ")"))
+            (p (@ (class "section-intro"))
+               "Experience Lisp right here! This is a fully functional Scheme REPL powered by "
+               (a (@ (href "https://lips.js.org/")
+                     (target "_blank")
+                     (rel "noopener noreferrer"))
+                  "LIPS Scheme")
+               ". Try evaluating some expressions:")
+            (div (@ (class "repl-examples"))
+                 (code "(+ 1 2 3 4 5)")
+                 (code "(define (square x) (* x x))")
+                 (code "(map square '(1 2 3 4 5))"))
+            (div (@ (id "repl") (class "repl-container")))))
+
 ;; History section
 (define (history-section)
   `(section (@ (id "history") (class "section history"))
@@ -399,6 +419,7 @@
 (define (index-content)
   `(div (@ (class "content"))
         ,(hero-section)
+        ,(repl-section)
         ,(history-section)
         ,(general-section)
         ,(common-lisp-section)

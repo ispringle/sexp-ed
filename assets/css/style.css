@@ -682,6 +682,166 @@ code {
 }
 
 /* --------------------------------------------------------------------------
+   REPL Section
+   -------------------------------------------------------------------------- */
+.repl-section {
+  background: 
+    linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, transparent 40%),
+    linear-gradient(225deg, rgba(20, 184, 166, 0.05) 0%, transparent 40%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl) var(--space-xl);
+}
+
+.repl-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+  margin-bottom: var(--space-xl);
+}
+
+.repl-examples code {
+  background: var(--bg-card);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  color: var(--scheme-orange-light);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.repl-examples code:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--scheme-orange);
+  transform: translateY(-2px);
+}
+
+.repl-container {
+  max-width: 900px;
+  margin: 0 auto;
+  height: 280px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(124, 58, 237, 0.1),
+    0 0 80px rgba(20, 184, 166, 0.05);
+}
+
+/* jQuery Terminal customization to match our theme */
+.repl-container .terminal {
+  background: var(--bg-card) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 0.95rem !important;
+  padding: var(--space-md) !important;
+  height: 100% !important;
+  max-height: 280px !important;
+  min-height: auto !important;
+}
+
+.repl-container .terminal-wrapper {
+  height: 100% !important;
+  max-height: 280px !important;
+}
+
+.repl-container .terminal-scroller {
+  height: 100% !important;
+  max-height: 280px !important;
+}
+
+.repl-container .terminal .terminal-output {
+  color: var(--text-primary) !important;
+}
+
+.repl-container .terminal .terminal-output div {
+  line-height: 1.6 !important;
+}
+
+.repl-container .terminal .cmd {
+  color: var(--text-primary) !important;
+}
+
+.repl-container .terminal .cmd .prompt {
+  color: var(--cl-purple-light) !important;
+}
+
+.repl-container .terminal .cmd .cursor {
+  background: var(--scheme-orange) !important;
+  color: var(--bg-dark) !important;
+}
+
+/* Syntax highlighting colors matching our theme */
+.repl-container .token.comment {
+  color: var(--text-muted) !important;
+}
+
+.repl-container .token.string {
+  color: var(--clojure-teal-light) !important;
+}
+
+.repl-container .token.number {
+  color: var(--scheme-orange-light) !important;
+}
+
+.repl-container .token.keyword,
+.repl-container .token.builtin {
+  color: var(--cl-purple-light) !important;
+}
+
+.repl-container .token.function {
+  color: var(--elisp-gold-light) !important;
+}
+
+.repl-container .token.operator,
+.repl-container .token.punctuation {
+  color: var(--janet-coral-light) !important;
+}
+
+.repl-container .token.boolean {
+  color: var(--racket-red-light) !important;
+}
+
+/* Scrollbar styling for the REPL */
+.repl-container .terminal::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.repl-container .terminal::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+.repl-container .terminal::-webkit-scrollbar-thumb {
+  background: var(--bg-card-hover);
+  border-radius: 4px;
+}
+
+.repl-container .terminal::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* REPL responsive adjustments */
+@media (max-width: 768px) {
+  .repl-container {
+    height: 240px;
+    border-radius: var(--radius-sm);
+  }
+  
+  .repl-container .terminal,
+  .repl-container .terminal-wrapper,
+  .repl-container .terminal-scroller {
+    max-height: 240px !important;
+  }
+  
+  .repl-examples code {
+    font-size: 0.75rem;
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
+
+/* --------------------------------------------------------------------------
    Footer
    -------------------------------------------------------------------------- */
 .footer {

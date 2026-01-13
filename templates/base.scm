@@ -12,6 +12,7 @@
                 (span (@ (class "paren")) ")")))
         (ul (@ (class "nav-links"))
             (li (a (@ (href "#intro")) "Intro"))
+            (li (a (@ (href "#try-it")) "Try It"))
             (li (a (@ (href "#history")) "History"))
             (li (a (@ (href "#common-lisp")) "Common Lisp"))
             (li (a (@ (href "#scheme")) "Scheme"))
@@ -62,9 +63,38 @@
                    (href "/assets/css/style.css")))
           (link (@ (rel "icon")
                    (type "image/svg+xml")
-                   (href "/assets/favicon.svg"))))
+                   (href "/assets/favicon.svg")))
+          ;; LIPS Scheme REPL dependencies
+          (link (@ (rel "stylesheet")
+                   (href "https://cdn.jsdelivr.net/npm/jquery.terminal/css/jquery.terminal.min.css")))
+          (link (@ (rel "stylesheet")
+                   (href "https://cdn.jsdelivr.net/npm/lips@beta/lib/css/terminal.css"))))
          (body
           ,(navigation)
           (main (@ (class "main"))
                 ,content)
-          ,(footer))))
+          ,(footer)
+          ;; LIPS Scheme REPL scripts (loaded at end of body for performance)
+          (script (@ (src "https://cdn.jsdelivr.net/npm/jquery")))
+          (script (@ (src "https://cdn.jsdelivr.net/npm/jquery.terminal/js/jquery.terminal.min.js")))
+          (script (@ (src "https://cdn.jsdelivr.net/npm/prismjs/prism.js")))
+          (script (@ (src "https://cdn.jsdelivr.net/npm/jquery.terminal/js/prism.js")))
+          (script (@ (src "https://cdn.jsdelivr.net/npm/prismjs/components/prism-scheme.min.js")))
+          (script (@ (src "https://cdn.jsdelivr.net/npm/lips@beta/dist/lips.min.js")
+                     (bootstrap "")))
+          (script (@ (src "https://cdn.jsdelivr.net/npm/lips@beta/lib/js/terminal.js")))
+          (script "
+$(function() {
+    if ($('#repl').length) {
+        $.terminal.syntax('scheme');
+        var term = terminal({
+            selector: '#repl',
+            dynamic: false,
+            name: 'sexp-ed-repl',
+            lips: lips,
+            height: 280
+        });
+        term.echo('Welcome! Try: (+ 1 2 3) or (map (lambda (x) (* x x)) (quote (1 2 3 4 5)))', { formatters: false });
+    }
+});
+"))))
