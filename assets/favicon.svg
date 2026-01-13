@@ -1,23 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="lisp-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7c3aed"/>
-      <stop offset="50%" stop-color="#f97316"/>
-      <stop offset="100%" stop-color="#14b8a6"/>
+    <linearGradient id="paren-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#f97316"/>
     </linearGradient>
   </defs>
   
   <!-- Dark background circle -->
   <circle cx="16" cy="16" r="15" fill="#0f0f1a"/>
-  <circle cx="16" cy="16" r="14.5" fill="none" stroke="url(#lisp-gradient)" stroke-width="1" opacity="0.3"/>
+  <circle cx="16" cy="16" r="14" fill="none" stroke="url(#paren-gradient)" stroke-width="1.5" opacity="0.4"/>
   
+  <!-- Bold parentheses as paths for clarity at small sizes -->
   <!-- Opening paren ( -->
-  <text x="4" y="22" font-family="monospace" font-size="16" font-weight="700" fill="url(#lisp-gradient)">(</text>
-  
-  <!-- Lambda λ -->
-  <text x="11" y="22" font-family="serif" font-size="14" font-weight="600" fill="url(#lisp-gradient)">λ</text>
+  <path 
+    d="M12 7 C6 12, 6 20, 12 25" 
+    fill="none" 
+    stroke="#a78bfa" 
+    stroke-width="3.5" 
+    stroke-linecap="round"
+  />
   
   <!-- Closing paren ) -->
-  <text x="21" y="22" font-family="monospace" font-size="16" font-weight="700" fill="url(#lisp-gradient)">)</text>
+  <path 
+    d="M20 7 C26 12, 26 20, 20 25" 
+    fill="none" 
+    stroke="#f97316" 
+    stroke-width="3.5" 
+    stroke-linecap="round"
+  />
 </svg>
-
