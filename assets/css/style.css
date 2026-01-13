@@ -428,6 +428,21 @@ code {
   background-clip: text;
 }
 
+.timeline-content::after {
+  content: ')';
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .timeline-content h3 {
   font-size: 1.25rem;
   margin-bottom: var(--space-sm);
@@ -460,6 +475,11 @@ code {
   
   .timeline-content::before {
     left: -25px;
+    font-size: 1.25rem;
+  }
+  
+  .timeline-content::after {
+    right: -20px;
     font-size: 1.25rem;
   }
 }
@@ -697,30 +717,24 @@ code {
   transform: translateX(4px);
 }
 
-.footer-parens .heart {
-  color: var(--janet-coral);
-  animation: heartbeat 1.5s ease-in-out infinite;
+.footer-parens .ghost {
+  display: inline-block;
+  text-decoration: none;
+  animation: ghost-float 2s ease-in-out infinite;
 }
 
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+.footer-parens .ghost:hover {
+  animation: ghost-wiggle 0.3s ease-in-out infinite;
 }
 
-.footer-haunt {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-bottom: var(--space-sm);
+@keyframes ghost-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
-.footer-haunt a {
-  color: var(--text-secondary);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.footer-haunt a:hover {
-  color: var(--text-primary);
+@keyframes ghost-wiggle {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
 }
 
 .footer-links {

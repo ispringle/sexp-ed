@@ -27,15 +27,14 @@
                 (p (@ (class "footer-parens"))
                    (span (@ (class "paren open")) "(")
                    "Made with "
-                   (span (@ (class "heart")) "♥")
+                   (a (@ (class "ghost")
+                         (href "https://dthompson.us/projects/haunt.html")
+                         (target "_blank")
+                         (rel "noopener noreferrer")
+                         (title "Built with Haunt"))
+                      "👻")
                    " and lots of parentheses"
                    (span (@ (class "paren close")) ")"))
-                (p (@ (class "footer-haunt"))
-                   "Built with 👻 "
-                   (a (@ (href "https://dthompson.us/projects/haunt.html")
-                         (target "_blank")
-                         (rel "noopener noreferrer"))
-                      "Haunt"))
                 (p (@ (class "footer-links"))
                    "Contribute on "
                    (a (@ (href "https://github.com/ispringle/sexp-ed")
