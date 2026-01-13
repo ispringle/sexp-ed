@@ -1,0 +1,11 @@
+# Generated site output
+site/
+
+# Editor files
+*~
+\#*\#
+.#*
+
+# OS files
+.DS_Store
+Thumbs.db
