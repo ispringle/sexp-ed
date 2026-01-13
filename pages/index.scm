@@ -208,7 +208,24 @@
                    "Scheme Wiki"
                    "http://community.schemewiki.org/"
                    "Community wiki with tutorials, idioms, and implementation comparisons."
-                   '("community" "free")))))
+                   '("community" "free"
+                 ,(resource-card
+       "Sigil"
+       "https://usesigil.org/"
+       "This website is missing the Sigil language that is a Scheme implementation. Here is the excerpt from the Sigil's website:
+```
+Craft software worth sharing.
+
+Sigil is a Scheme for people who want to make things — tools, games, utilities, creative projects — and share them with others. Write your program, compile it to a single binary, and give it to anyone. No runtime, no dependencies, no installation instructions. Just software that works.
+A Scheme That Ships
+
+Most Schemes are for learning or research. Sigil is for building.
+
+You get the elegance of Scheme — simple syntax, powerful macros, REPL-driven development — combined with everything you need to make real programs: file I/O, networking, JSON, concurrency, and more. When you're done, sigil build produces a standalone executable you can send to anyone.
+
+The language is small enough to feel personal. The tools are practical enough to be useful. The binaries are small enough to be delightful.
+```"
+       '("reference" "implementation" "free")))))))
 
 ;; Racket section
 (define (racket-section)
