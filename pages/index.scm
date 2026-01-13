@@ -311,7 +311,7 @@
                 "Janet"
                 (span (@ (class "paren")) ")"))
             (p (@ (class "section-intro"))
-               "A lightweight, embeddable Lisp for scripting and system programming. Perfect for games and embedded systems.")
+               "A lightweight Lisp for scripting and system programming. Embeddable in applications like Lua, not to be confused with embedded devices.")
             (div (@ (class "resources-grid"))
                  ,(resource-card
                    "Janet Documentation"
@@ -368,6 +368,11 @@
                    "Carp"
                    "https://github.com/carp-lang/Carp"
                    "A statically typed Lisp without garbage collection for real-time systems."
+                   '("language" "free"))
+                 ,(resource-card
+                   "uLisp"
+                   "http://www.ulisp.com/"
+                   "A Lisp for microcontrollers. Run Lisp on Arduino, ESP32, and other embedded devices."
                    '("language" "free"))
                  ,(resource-card
                    "Wisp"
