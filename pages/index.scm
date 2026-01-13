@@ -208,7 +208,12 @@
                    "Scheme Wiki"
                    "http://community.schemewiki.org/"
                    "Community wiki with tutorials, idioms, and implementation comparisons."
-                   '("community" "free")))))
+                   '("community" "free"
+                 ,(resource-card
+                   "Sigil"
+                   "https://usesigil.org/"
+                   "David Wilson's Scheme implementation. Simple syntax, powerful abstractions and single-binary distribution. A practical language for building standalone applications."
+                   '("reference" "implementation" "free")))))))
 
 ;; Racket section
 (define (racket-section)
