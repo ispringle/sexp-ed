@@ -1,0 +1,104 @@
+name: Submit a Resource
+description: Suggest a new learning resource to add to sexp-ed
+title: "[Resource]: "
+labels: ["resource-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping grow the sexp-ed resource collection! 
+        Please fill out the details below to suggest a new learning resource.
+        
+        🤖 **Note:** A pull request will be automatically generated from your submission for maintainer review.
+
+  - type: input
+    id: title
+    attributes:
+      label: Resource Title
+      description: The name of the resource (book, tutorial, tool, etc.)
+      placeholder: "e.g., Practical Common Lisp"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      description: Link to the resource
+      placeholder: "https://example.com/resource"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief description of the resource (1-2 sentences)
+      placeholder: "A comprehensive guide to Common Lisp with practical, real-world examples."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: dialect
+    attributes:
+      label: Dialect / Section
+      description: Which section should this resource appear in?
+      options:
+        - General Lisp Resources
+        - Common Lisp
+        - Scheme
+        - Racket
+        - Clojure
+        - Emacs Lisp
+        - Janet
+        - Other Lisps & Inspired Languages
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: tags
+    attributes:
+      label: Tags
+      description: Select all tags that apply to this resource
+      options:
+        - label: "book"
+        - label: "tutorial"
+        - label: "guide"
+        - label: "reference"
+        - label: "video"
+        - label: "exercises"
+        - label: "paper"
+        - label: "essays"
+        - label: "community"
+        - label: "implementation"
+        - label: "tool"
+        - label: "library"
+        - label: "language"
+        - label: "free"
+        - label: "beginner"
+        - label: "advanced"
+        - label: "classic"
+        - label: "experimental"
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other information that might be helpful (why you recommend it, your experience with it, etc.)
+      placeholder: "This resource helped me finally understand macros..."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verification
+      description: Please confirm the following
+      options:
+        - label: I have verified the URL is working and accessible
+          required: true
+        - label: This resource is not already listed on sexp-ed.com
+          required: true
+        - label: This resource is relevant to learning Lisp or a Lisp dialect
+          required: true
+
