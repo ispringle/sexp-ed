@@ -50,9 +50,9 @@
                   "LIPS Scheme")
                ". Try evaluating some expressions:")
             (div (@ (class "repl-examples"))
-                 (code "(+ 1 2 3 4 5)")
-                 (code "(define (square x) (* x x))")
-                 (code "(map square '(1 2 3 4 5))"))
+                 (code (@ (class "repl-example")) "(+ 1 2 3 4 5)")
+                 (code (@ (class "repl-example")) "(define (square x) (* x x))")
+                 (code (@ (class "repl-example")) "(map square '(1 2 3 4 5))"))
             (div (@ (id "repl") (class "repl-container")))))
 
 ;; History section

@@ -717,6 +717,12 @@ code {
   transform: translateY(-2px);
 }
 
+.repl-examples code:active {
+  transform: translateY(0);
+  background: var(--scheme-orange);
+  color: var(--bg-dark);
+}
+
 .repl-container {
   max-width: 900px;
   margin: 0 auto;

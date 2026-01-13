@@ -94,7 +94,16 @@ $(function() {
             lips: lips,
             height: 280
         });
-        term.echo('Welcome! Try: (+ 1 2 3) or (map (lambda (x) (* x x)) (quote (1 2 3 4 5)))', { formatters: false });
+        term.echo('Welcome! Click an example above or try: (+ 1 2 3)', { formatters: false });
+        
+        // Make examples clickable
+        $('.repl-example').on('click', function() {
+            var code = $(this).text();
+            term.insert(code);
+            // Scroll REPL into view, then focus after scroll settles
+            $('#repl')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(function() { term.focus(); }, 300);
+        });
     }
 });
 "))))
