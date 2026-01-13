@@ -2,7 +2,7 @@ name: Auto-generate PR from Resource Submission
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, labeled]
 
 jobs:
   create-pr:
