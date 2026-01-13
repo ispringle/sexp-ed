@@ -4,6 +4,11 @@ on:
   issues:
     types: [opened, edited, labeled]
 
+# Ensure only one workflow runs at a time per issue
+concurrency:
+  group: resource-submission-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 jobs:
   create-pr:
     if: contains(github.event.issue.labels.*.name, 'resource-submission')
