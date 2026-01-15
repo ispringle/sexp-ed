@@ -295,7 +295,12 @@
                    "Babashka"
                    "https://babashka.org/"
                    "Fast-starting Clojure for scripting. Write Clojure scripts that start instantly."
-                   '("tool" "free")))))
+                   '("tool" "free"
+                 ,(resource-card
+                   "Jank"
+                   "https://jank-lang.org/"
+                   "A dialect of Clojure which embraces its interactive, value-oriented nature as well as the desire for native compilation and minimal runtimes. Where jank differs from Clojure JVM is that its host is C++ on top of an LLVM-based JIT."
+                   '("implementation" "free")))))))
 
 ;; Emacs Lisp section
 (define (emacs-lisp-section)
