@@ -137,10 +137,10 @@ jobs:
             
             const content = Buffer.from(mainFileData.content, 'base64').toString('utf8');
             
-            // Find the section and insert before the closing ))))) of the resources-grid
-            // 5 parens: 1 for tags list, 1 for resource-card, 1 for div, 1 for section, 1 for quasiquote
+            // Find the section and insert before the closing ))) of the div/section/quasiquote
+            // Match up to and including all complete resource-cards, then capture just the 3 structural closing parens
             const sectionRegex = new RegExp(
-              `(\\(section \\(@ \\(id "${sectionInfo.id}"\\)[\\s\\S]*?\\(div \\(@ \\(class "resources-grid"\\)\\)[\\s\\S]*?)(\\)\\)\\)\\)\\))`,
+              `(\\(section \\(@ \\(id "${sectionInfo.id}"\\)[\\s\\S]*?\\(div \\(@ \\(class "resources-grid"\\)\\)[\\s\\S]*?)(\\)\\)\\))`,
               'm'
             );
             
