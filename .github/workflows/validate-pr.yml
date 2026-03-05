@@ -1,0 +1,21 @@
+name: Validate PR
+
+on:
+  pull_request:
+    paths:
+      - 'pages/index.scm'
+
+jobs:
+  validate:
+    name: Validate index.scm
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run validation script
+        run: docker compose run --rm build scripts/validate-index.scm

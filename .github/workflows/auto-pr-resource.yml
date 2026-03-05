@@ -22,14 +22,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Parse issue and create/update PR
+      - name: Parse issue fields
+        id: parse
         uses: actions/github-script@v7
         with:
           script: |
             const issue = context.payload.issue;
             const body = issue.body;
-            const action = context.payload.action;
-            
+
             // Parse the issue form fields
             function parseField(body, fieldName) {
               const regex = new RegExp(`### ${fieldName}\\s*\\n\\s*([\\s\\S]*?)(?=\\n### |$)`, 'i');
@@ -39,12 +39,12 @@ jobs:
               }
               return '';
             }
-            
+
             function parseCheckboxes(body, fieldName) {
               const regex = new RegExp(`### ${fieldName}\\s*\\n([\\s\\S]*?)(?=\\n### |$)`, 'i');
               const match = body.match(regex);
               if (!match) return [];
-              
+
               const checkboxSection = match[1];
               const checked = [];
               const checkboxRegex = /- \[x\] (.+)/gi;
@@ -54,13 +54,13 @@ jobs:
               }
               return checked;
             }
-            
+
             const title = parseField(body, 'Resource Title');
             const url = parseField(body, 'URL');
             const description = parseField(body, 'Description');
             const dialect = parseField(body, 'Dialect / Section');
             const tags = parseCheckboxes(body, 'Tags');
-            
+
             if (!title || !url || !description || !dialect) {
               console.log('Missing required fields, skipping PR creation');
               await github.rest.issues.createComment({
@@ -69,47 +69,130 @@ jobs:
                 issue_number: issue.number,
                 body: '⚠️ Could not parse all required fields from this submission. Please ensure Title, URL, Description, and Dialect are filled out.'
               });
+              core.setOutput('skip', 'true');
               return;
             }
-            
-            // Map dialect to section function name and insertion marker
+
+            // Map dialect to section ID
             const dialectMap = {
-              'General Lisp Resources': { section: 'general-section', id: 'general' },
-              'Common Lisp': { section: 'common-lisp-section', id: 'common-lisp' },
-              'Scheme': { section: 'scheme-section', id: 'scheme' },
-              'Racket': { section: 'racket-section', id: 'racket' },
-              'Clojure': { section: 'clojure-section', id: 'clojure' },
-              'Emacs Lisp': { section: 'emacs-lisp-section', id: 'emacs-lisp' },
-              'Janet': { section: 'janet-section', id: 'janet' },
-              'Other Lisps & Inspired Languages': { section: 'others-section', id: 'others' }
+              'General Lisp Resources': 'general',
+              'Common Lisp': 'common-lisp',
+              'Scheme': 'scheme',
+              'Racket': 'racket',
+              'Clojure': 'clojure',
+              'Emacs Lisp': 'emacs-lisp',
+              'Janet': 'janet',
+              'Other Lisps & Inspired Languages': 'others'
             };
-            
-            const sectionInfo = dialectMap[dialect];
-            if (!sectionInfo) {
+
+            const sectionId = dialectMap[dialect];
+            if (!sectionId) {
               console.log('Unknown dialect:', dialect);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `⚠️ Unknown dialect: "${dialect}". Please select a valid option.`
+              });
+              core.setOutput('skip', 'true');
               return;
             }
-            
-            // Format tags for Scheme
-            const tagsScheme = tags.length > 0 
-              ? `'(${tags.map(t => `"${t}"`).join(' ')})`
-              : "'()";
-            
-            // Escape special characters for Scheme strings
-            const escapeScheme = (str) => str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-            
-            // Create the resource-card s-expression
-            const resourceCard = [
-              '                 ,(resource-card',
-              `                   "${escapeScheme(title)}"`,
-              `                   "${escapeScheme(url)}"`,
-              `                   "${escapeScheme(description)}"`,
-              `                   ${tagsScheme})`
-            ].join('\n');
-            
-            // Consistent branch name based on issue number only
+
+            // Output parsed values
+            core.setOutput('skip', 'false');
+            core.setOutput('title', title);
+            core.setOutput('url', url);
+            core.setOutput('description', description);
+            core.setOutput('dialect', dialect);
+            core.setOutput('section_id', sectionId);
+            core.setOutput('tags', JSON.stringify(tags));
+            core.setOutput('tags_json', JSON.stringify(tags));
+
+      - name: Modify index.scm with Scheme script
+        if: steps.parse.outputs.skip != 'true'
+        id: modify
+        run: |
+          # Escape single quotes for shell by replacing ' with '\''
+          escape_shell() {
+            echo "$1" | sed "s/'/'\\\\''/g"
+          }
+
+          TITLE='${{ steps.parse.outputs.title }}'
+          URL='${{ steps.parse.outputs.url }}'
+          DESC='${{ steps.parse.outputs.description }}'
+          SECTION_ID='${{ steps.parse.outputs.section_id }}'
+          TAGS_JSON='${{ steps.parse.outputs.tags_json }}'
+
+          echo "Running Scheme script to add resource..."
+          echo "Section ID: $SECTION_ID"
+          echo "Title: $TITLE"
+          echo "URL: $URL"
+
+          # Run the docker compose command
+          if docker compose run --rm build scripts/add-resource.scm --in-place "$SECTION_ID" "$TITLE" "$URL" "$DESC" "$TAGS_JSON"; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "Resource added successfully"
+          else
+            EXIT_CODE=$?
+            echo "success=false" >> $GITHUB_OUTPUT
+            echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+
+            # Map exit code to error message
+            case $EXIT_CODE in
+              1)
+                ERROR_MSG="Invalid arguments provided to the script."
+                ;;
+              2)
+                ERROR_MSG="Could not find pages/index.scm file."
+                ;;
+              3)
+                ERROR_MSG="Parse/syntax error in the Scheme file."
+                ;;
+              4)
+                ERROR_MSG="Could not find the section in index.scm."
+                ;;
+              5)
+                ERROR_MSG="Validation failed. The generated content is invalid."
+                ;;
+              *)
+                ERROR_MSG="Unknown error occurred (exit code: $EXIT_CODE)."
+                ;;
+            esac
+
+            echo "error_message=$ERROR_MSG" >> $GITHUB_OUTPUT
+            echo "Script failed with exit code $EXIT_CODE: $ERROR_MSG"
+            exit 1
+          fi
+
+      - name: Handle script failure
+        if: failure() && steps.modify.outputs.success == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const errorMessage = '${{ steps.modify.outputs.error_message }}';
+            const dialect = '${{ steps.parse.outputs.dialect }}';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: `⚠️ Failed to add resource: ${errorMessage}\n\nPlease check the workflow logs for more details, or contact a maintainer if the issue persists.`
+            });
+
+      - name: Create or update PR
+        if: steps.parse.outputs.skip != 'true' && steps.modify.outputs.success == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = '${{ steps.parse.outputs.title }}';
+            const url = '${{ steps.parse.outputs.url }}';
+            const description = '${{ steps.parse.outputs.description }}';
+            const dialect = '${{ steps.parse.outputs.dialect }}';
+            const tags = JSON.parse('${{ steps.parse.outputs.tags }}');
+
             const branchName = `resource/issue-${issue.number}`;
-            
+
             // Check if a PR already exists for this issue
             const { data: pulls } = await github.rest.pulls.list({
               owner: context.repo.owner,
@@ -117,51 +200,20 @@ jobs:
               head: `${context.repo.owner}:${branchName}`,
               state: 'open'
             });
-            
+
             const existingPR = pulls.length > 0 ? pulls[0] : null;
-            
-            // Get the default branch SHA (latest main)
+
+            // Get the current commit SHA (the modified index.scm is in the working directory)
             const { data: mainRef } = await github.rest.git.getRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'heads/main'
             });
-            
-            // Get the latest index.scm content from main
-            const { data: mainFileData } = await github.rest.repos.getContent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: 'pages/index.scm',
-              ref: 'main'
-            });
-            
-            const content = Buffer.from(mainFileData.content, 'base64').toString('utf8');
-            
-            // Find the section and insert before the closing ))) of the div/section/quasiquote
-            // Match up to and including all complete resource-cards, then capture just the 3 structural closing parens
-            const sectionRegex = new RegExp(
-              `(\\(section \\(@ \\(id "${sectionInfo.id}"\\)[\\s\\S]*?\\(div \\(@ \\(class "resources-grid"\\)\\)[\\s\\S]*?)(\\)\\)\\))`,
-              'm'
-            );
-            
-            const sectionMatch = content.match(sectionRegex);
-            if (!sectionMatch) {
-              console.log('Could not find section:', sectionInfo.id);
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                body: `⚠️ Could not find the "${dialect}" section in index.scm. Manual intervention required.`
-              });
-              return;
-            }
-            
-            // Insert the new resource card before the closing )))))
-            const newContent = content.replace(
-              sectionRegex,
-              `$1\n${resourceCard}$2`
-            );
-            
+
+            // Read the modified index.scm file
+            const fs = require('fs');
+            const modifiedContent = fs.readFileSync('pages/index.scm', 'utf8');
+
             const prBody = [
               '## New Resource Submission',
               '',
@@ -180,11 +232,11 @@ jobs:
               '',
               `Closes #${issue.number}`
             ].join('\n');
-            
+
             if (existingPR) {
               // UPDATE existing PR: reset branch to main and apply new changes
               console.log(`Updating existing PR #${existingPR.number}`);
-              
+
               // Force update the branch ref to point to main
               await github.rest.git.updateRef({
                 owner: context.repo.owner,
@@ -193,7 +245,7 @@ jobs:
                 sha: mainRef.object.sha,
                 force: true
               });
-              
+
               // Get the file SHA from the reset branch (now same as main)
               const { data: branchFileData } = await github.rest.repos.getContent({
                 owner: context.repo.owner,
@@ -201,18 +253,18 @@ jobs:
                 path: 'pages/index.scm',
                 ref: branchName
               });
-              
+
               // Update the file with new content
               await github.rest.repos.createOrUpdateFileContents({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 path: 'pages/index.scm',
                 message: `Update resource: ${title}`,
-                content: Buffer.from(newContent).toString('base64'),
+                content: Buffer.from(modifiedContent).toString('base64'),
                 sha: branchFileData.sha,
                 branch: branchName
               });
-              
+
               // Update PR title and body
               await github.rest.pulls.update({
                 owner: context.repo.owner,
@@ -221,7 +273,7 @@ jobs:
                 title: `Add resource: ${title}`,
                 body: prBody
               });
-              
+
               // Comment on the issue about the update
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -229,13 +281,13 @@ jobs:
                 issue_number: issue.number,
                 body: `🔄 Pull request #${existingPR.number} has been updated with your changes.`
               });
-              
+
               console.log(`Updated PR #${existingPR.number} for issue #${issue.number}`);
-              
+
             } else {
               // CREATE new PR
               console.log('Creating new PR');
-              
+
               // Create new branch from main
               try {
                 await github.rest.git.createRef({
@@ -258,7 +310,7 @@ jobs:
                   throw e;
                 }
               }
-              
+
               // Get the file SHA from the new branch
               const { data: branchFileData } = await github.rest.repos.getContent({
                 owner: context.repo.owner,
@@ -266,18 +318,18 @@ jobs:
                 path: 'pages/index.scm',
                 ref: branchName
               });
-              
+
               // Update the file
               await github.rest.repos.createOrUpdateFileContents({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 path: 'pages/index.scm',
                 message: `Add resource: ${title}`,
-                content: Buffer.from(newContent).toString('base64'),
+                content: Buffer.from(modifiedContent).toString('base64'),
                 sha: branchFileData.sha,
                 branch: branchName
               });
-              
+
               // Create the pull request
               const { data: pr } = await github.rest.pulls.create({
                 owner: context.repo.owner,
@@ -287,7 +339,7 @@ jobs:
                 base: 'main',
                 body: prBody
               });
-              
+
               // Comment on the issue with the PR link
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -295,6 +347,6 @@ jobs:
                 issue_number: issue.number,
                 body: `🎉 Thanks for your submission! A pull request has been automatically created: #${pr.number}\n\nA maintainer will review it shortly.`
               });
-              
+
               console.log(`Created PR #${pr.number} for issue #${issue.number}`);
             }
