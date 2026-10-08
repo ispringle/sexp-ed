@@ -128,12 +128,18 @@ Adds a new resource card to a section in `pages/index.scm`. The script reads the
 
 ### How It Works
 
-1. Reads all S-expressions from `pages/index.scm`
-2. Finds the target section function (e.g., `scheme-section`)
-3. Locates the `resources-grid` div within that section
-4. Appends a new `,(resource-card ...)` form to the grid
-5. Validates the output is valid Scheme
-6. Either prints to stdout (default) or writes back to `pages/index.scm` (with `--in-place`)
+The script edits `pages/index.scm` as TEXT (it never re-prints the file), so comments,
+formatting and all other sections stay byte-for-byte intact. Only the new card is added.
+
+1. Finds `(define (<section>-section)` and its `resources-grid` div
+2. Paren-matches (aware of strings, comments, `#\x`) to the div's closing paren
+3. Inserts a new `,(resource-card ...)` before it
+4. Checks the result still reads as Scheme
+5. Prints to stdout, or with `--in-place` writes atomically (temp file + rename)
+
+`INDEX_FILE=<path>` overrides the target file (used by the tests).
+
+Tags must match `[A-Za-z0-9_-]+` (they become CSS classes). URLs must be `http(s)://`.
 
 ### Special Characters
 
@@ -160,15 +166,6 @@ Test suite for the add-resource script.
 
 Runs all tests and reports results. Exit code 0 indicates all tests passed.
 
-### Test Coverage
-
-The test suite validates:
-- Script existence and executability
-- Usage message display
-- Invalid section handling
-- Resource insertion into sections
-- Output validity (parseable Scheme)
-- In-place file modification
-- Preservation of existing resources
-- Special character handling
-- Multiple section support
+Runs against a temp copy of the real `pages/index.scm`. Checks: insert, escaping,
+minimal diff (comments and other sections untouched), empty grid, repeat adds, and every
+error exit code leaving the file unchanged.
